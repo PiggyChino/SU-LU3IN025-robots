@@ -103,42 +103,27 @@ def step(robotId, sensors):
 		enemy_detected_by_front_sensor = True # exemple de détection d'un robot de l'équipe adversaire (ne sert à rien)
 	"""
 	uniqint += 1
+	if sensors["sensor_front"]["isRobot"] == True and sensors["sensor_front"]["isSameTeam"] == True and (sensors["sensor_front"]["distance_to_robot"] < 0.2 or sensors["sensor_front_right"]["distance_to_robot"] < 0.2 or sensors["sensor_front_left"]["distance_to_robot"] < 0.2): #evite les alliés et les murs
+		return 0, 1
 	match (robotId%8):
-	
-		case 0 | 7: #subsomption, perturbateur
+		
+		case 0 | 6 : #subsomption, perturbateur				
 			if sensors["sensor_front"]["isRobot"] == True and sensors["sensor_front"]["isSameTeam"] == True: #evite les alliés et les murs
 				if sensors["sensor_front_right"]["distance_to_robot"] and sensors["sensor_front_left"]["distance_to_robot"]:
 					return hateBot(robotId, sensors)
 				if sensors["sensor_front_right"]["distance_to_wall"] and sensors["sensor_front_left"]["distance_to_wall"]:
 					return hateWall(robotId, sensors)
-				
-				
 			if sensors["sensor_front"]["distance_to_wall"]:
 				return hateWall(robotId, sensors)	
 				
-				
 			if sensors["sensor_right"] and sensors["sensor_left"]:
 				return 0, -0.7
-			#si il y un trou dans le mur, il rentre
-			if sensors["sensor_front_right"]["distance_to_wall"] and sensors["sensor_front_right"]["distance_to_wall"]:
-				return 0.5, 0.25
-			if sensors["sensor_back_right"]["distance_to_wall"] and sensors["sensor_back_left"]["distance_to_wall"]:
-				return 0.5, -0.25
 				
 			return base(robotId, sensors)
+		
 			
 			
-			
-		case 1: 
-			if sensors["sensor_front"]["isRobot"] == True and sensors["sensor_front"]["isSameTeam"] == False:
-				if (0.5 > sensors["sensor_front"]["distance_to_wall"]):
-					return 1, 0
-				
-			return base(robotId, sensors)
-			
-			
-			
-		case 2: #aleatoire périodique
+		case 1 | 4: #aleatoire périodique
 			if uniqint % 30 == 0 :
 				rotation = random.randint(-1, 1) * sensors["sensor_front_left"]["distance_to_wall"] + random.randint(-1, 1) *sensors["sensor_front_right"]["distance_to_wall"]
 				return 1, rotation
@@ -147,19 +132,17 @@ def step(robotId, sensors):
 			
 			
 			
-		case 3: #LOCK
-			return base(robotId, sensors)
+		case 3 : #force le passage
+			if sensors["sensor_front"]["isRobot"] == True and sensors["sensor_front"]["isSameTeam"] == False:
+				return avoider(robotId, sensors)
+			elif uniqint % 30 < 5:
+				return base(robotId, sensors)
+			return hateWall(robotId, sensors)
 			
-		case 4:
-			return base(robotId, sensors)
-			
-		case 5:
-			return base(robotId, sensors)
-			
-			
+		
 			
 			
-		case 6:
+		case 2:
 			if (0 == sensors["sensor_front"]["distance"]) and (0 == sensors["sensor_left"]["distance"]):
 				return 1, 0.5
 			if (0 == sensors["sensor_front"]["distance"]) and (0 == sensors["sensor_right"]["distance"]):
@@ -169,4 +152,21 @@ def step(robotId, sensors):
 			return base(robotId, sensors)
 			
 			
+			
+		case 7 : #longeur de mur
+			if 0.1 > sensors["sensor_front_left"]["distance_to_wall"] or 0.1 > sensors["sensor_front_right"]["distance_to_wall"]:
+				return 1, 1
+			if 0.1 > sensors["sensor_left"]["distance_to_wall"] or 0.1 > sensors["sensor_right"]["distance_to_wall"]:
+				return 1, 0.25
+			if 1 == sensors["sensor_right"]["distance_to_wall"] and 1 == sensors["sensor_front"]["distance_to_wall"]: #si rien devant et a droite, avance
+				return 0.9 , 0.5
+			
+			if 1 > sensors["sensor_front"]["distance_to_wall"]: #si mur devant, tourne a gauche
+				return 0.05 , -1
+
+			return 1, 0
+			
+			
+		case 4 | 5:
+			return base(robotId, sensors)
 
