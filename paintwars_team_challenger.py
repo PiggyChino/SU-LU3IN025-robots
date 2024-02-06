@@ -33,7 +33,7 @@ def hateBot(robotId, sensors): #evite les robots
 	return translation, rotation
 
 
-def avoider(robotId, sensors): #se balade
+def avoider(robotId, sensors): #se balade en évitant les murs et robots
 	sensors = get_extended_sensors(sensors)
 	translation = 1 * sensors["sensor_front"]["distance"]
 	rotation = (-1) * sensors["sensor_front_left"]["distance"] + 1 * sensors["sensor_front_right"]["distance"] \
@@ -61,7 +61,7 @@ def hateWall(robotId, sensors): #evite les murs
 	return translation, rotation
 	
 	
-def enemy_around(sensors) :
+def enemy_around(sensors) : #vérifie si un robot adverse est proche
 	if sensors["sensor_front_left"]["distance_to_wall"] < 1 :
 		return True
 	if sensors["sensor_front_right"]["distance_to_wall"] < 1 :
