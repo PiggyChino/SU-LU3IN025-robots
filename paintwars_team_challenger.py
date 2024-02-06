@@ -78,7 +78,7 @@ def loveBot(robotId, sensors): #suit les robots adverses
 		1 * sensors["sensor_front_right"]["distance_to_wall"] + (-1) * sensors["sensor_front_left"]["distance_to_wall"]
 		return 1, rotation
 	for s in sensors :
-		if sensors[s]["distance_to_wall"] < 0.05 :
+		if sensors[s]["distance_to_wall"] < 0.05 : #si proche d'un mur, adopte le comportement qui évite les murs
 			return hateWall(robotId, sensors)
 	else:
 		return avoider(robotId, sensors)
@@ -180,8 +180,9 @@ def aleatoire(robotId, sensors): #aleatoire
 	
 	
 def force(robotId, sensors): #force le passage
+	#Si un robot adverse se trouve devant lui, il continue d'avancer et ne fait aucune rotation
 	if sensors["sensor_front"]["isRobot"] == True and sensors["sensor_front"]["isSameTeam"] == False:
-		return 1, 0
+		return 1, 0 
 	if uniqint % 30 < 5:
 		return base(robotId, sensors)
 	return hateWall(robotId, sensors)
